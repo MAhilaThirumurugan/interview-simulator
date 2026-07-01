@@ -134,34 +134,37 @@ interview-simulator
 
 ## Login Page
 
-screenshots/Login.png
+![Login Page](screenshots/Login.png)
 
 ---
 
 ## Register Page
 
-screenshots/Register.png
+![Register Page](screenshots/Register.png)
 
 ---
 
 ## Dashboard
 
-screenshots/Dashboard.png
+![Dashboard](screenshots/Dashboard.png)
 
 ---
 
 ## Interview Session
 
-screenshots/Interview-question.png
-screenshots/Interview-answer.png
-screenshots/Feedback.png
-screenshots/Score.png
+![Interview Question](screenshots/Interview-question.png)
+
+![Interview Answer](screenshots/Interview-answer.png)
+
+![Feedback](screenshots/Feedback.png)
+
+![Score](screenshots/Score.png)
 
 ---
 
 ## Interview History
 
-screenshots/History.png
+![Interview History](screenshots/History.png)
 
 ---
 
