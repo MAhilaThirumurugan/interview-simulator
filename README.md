@@ -134,31 +134,34 @@ interview-simulator
 
 ## Login Page
 
-*(Add Screenshot Here)*
+screenshots/Login.png
 
 ---
 
 ## Register Page
 
-*(Add Screenshot Here)*
+screenshots/Register.png
 
 ---
 
 ## Dashboard
 
-*(Add Screenshot Here)*
+screenshots/Dashboard.png
 
 ---
 
 ## Interview Session
 
-*(Add Screenshot Here)*
+screenshots/Interview-question.png
+screenshots/Interview-answer.png
+screenshots/Feedback.png
+screenshots/Score.png
 
 ---
 
 ## Interview History
 
-*(Add Screenshot Here)*
+screenshots/History.png
 
 ---
 
