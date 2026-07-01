@@ -20,7 +20,10 @@ export default function LoginPage() {
       await login(form.email, form.password);
       navigate('/dashboard');
     } catch (err) {
+      console.log(err.response?.data);
+      console.log(err);
       setError(err.response?.data?.message || 'Login failed');
+    }
     } finally {
       setLoading(false);
     }
