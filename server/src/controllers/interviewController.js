@@ -57,22 +57,49 @@ exports.submitAnswer = async (req, res) => {
     lastTurn.feedback    = evaluation.feedback;
 
     // Generate next question (pass previous ones to avoid repeats)
-    const previousQuestions = session.turns.map(t => t.question);
-    const nextQuestion = await generateQuestion(
-      session.topic,
-      session.difficulty,
-      previousQuestions
-    );
+   // Check if 3 questions have been answered
+const answeredQuestions = session.turns.filter(t => t.answer).length;
 
-    // Add next turn
-    session.turns.push({ question: nextQuestion });
-    await session.save();
+if (answeredQuestions >= 3) {
 
-    res.json({
-      evaluation,
-      nextQuestion,
-      turnNumber: session.turns.length,
-    });
+  const avgScore =
+    session.turns.reduce((sum, t) => sum + (t.score || 0), 0) /
+    answeredQuestions;
+
+  session.overallScore = Number(avgScore.toFixed(1));
+  session.status = "completed";
+
+  await session.save();
+
+  return res.json({
+    completed: true,
+    evaluation,
+    overallScore: session.overallScore,
+    totalQuestions: answeredQuestions,
+  });
+}
+
+// Generate next question
+const previousQuestions = session.turns.map(t => t.question);
+
+const nextQuestion = await generateQuestion(
+  session.topic,
+  session.difficulty,
+  previousQuestions
+);
+
+session.turns.push({
+  question: nextQuestion,
+});
+
+await session.save();
+
+res.json({
+  completed: false,
+  evaluation,
+  nextQuestion,
+  turnNumber: session.turns.length,
+});
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

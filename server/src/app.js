@@ -7,6 +7,7 @@ const errorHandler       = require('./middleware/errorHandler');
 const app = express();
 const helmet = require('helmet');
 app.use(helmet());
+
 app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }));
 app.use(express.json());
 app.use(morgan('dev'));
