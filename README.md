@@ -1,38 +1,52 @@
 # 🎯 AI Interview Simulator
 
+<h1 align="center">🤖 AI Interview Simulator</h1>
+
 <p align="center">
-  <img src="https://img.shields.io/badge/React-19-blue?logo=react" />
-  <img src="https://img.shields.io/badge/Node.js-Backend-green?logo=node.js" />
-  <img src="https://img.shields.io/badge/Express.js-API-lightgrey?logo=express" />
-  <img src="https://img.shields.io/badge/MongoDB-Atlas-success?logo=mongodb" />
+An AI-powered MERN Stack application that helps users practice technical interviews with Google Gemini AI, secure authentication, interview history, and personalized feedback.
+</p>
+
+<p align="center">
+<a href="https://interview-simulator-lyart.vercel.app">🌐 Live Demo</a> •
+<a href="https://github.com/MAhilaThirumurugan/interview-simulator">💻 GitHub</a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white" />
+  <img src="https://img.shields.io/badge/Node.js-22-339933?logo=node.js&logoColor=white" />
+  <img src="https://img.shields.io/badge/Express.js-Backend-000000?logo=express" />
+  <img src="https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white" />
   <img src="https://img.shields.io/badge/JWT-Authentication-orange" />
-  <img src="https://img.shields.io/badge/Deployment-Vercel%20%7C%20Render-black" />
+  <img src="https://img.shields.io/badge/Google-Gemini_API-4285F4?logo=google&logoColor=white" />
+  <img src="https://img.shields.io/badge/Vercel-Frontend-black?logo=vercel" />
+  <img src="https://img.shields.io/badge/Render-Backend-46E3B7" />
 </p>
 
 ---
 
 ## 🌐 Live Demo
 
-🔗 **Frontend:**  
-https://interview-simulator-lyart.vercel.app
+🚀 https://interview-simulator-lyart.vercel.app
 
 ---
 
 # 📌 Project Overview
 
-AI Interview Simulator is a full-stack MERN application that helps users practice technical interviews in an interactive environment.
+AI Interview Simulator is a full-stack MERN application that enables users to practice technical interviews using Google Gemini AI. The platform dynamically generates role-specific interview questions, evaluates user responses, and provides personalized feedback. If the Google Gemini API is unavailable or the free-tier quota is exceeded, the application automatically switches to a predefined question set, ensuring uninterrupted interview practice.
 
 Users can:
 
 - Create an account
 - Log in securely
-- Start interview sessions
-- Answer technical questions
+- Start AI-powered interview sessions
+- Receive role-specific interview questions
+- Submit answers and receive AI-generated feedback
 - View interview history
 - Track interview scores
 
-The application demonstrates authentication, REST APIs, cloud deployment, MongoDB integration, and responsive frontend development.
+The application demonstrates MERN Stack development, Google Gemini API integration, JWT authentication, REST APIs, MongoDB Atlas, and cloud deployment using Vercel and Render.
 
+---
 ---
 
 # ✨ Features
@@ -45,13 +59,15 @@ The application demonstrates authentication, REST APIs, cloud deployment, MongoD
 - Protected Routes
 - Persistent Login
 
-### 🎯 Interview Module
+### 🤖 AI Interview Module
 
 - Start New Interview
-- Technical Questions
+- AI-generated Interview Questions using Google Gemini API
+- Automatic fallback to predefined interview questions when the Gemini API quota is exceeded or unavailable
 - Multiple Difficulty Levels
 - Topic Selection
-- Answer Submission
+- AI-powered Answer Evaluation
+- Personalized Feedback
 - Interview Completion
 
 ### 📊 Dashboard
@@ -84,6 +100,7 @@ The application demonstrates authentication, REST APIs, cloud deployment, MongoD
 
 - Node.js
 - Express.js
+- Google Gemini API
 - JWT
 - bcrypt.js
 - Express Validator
@@ -208,6 +225,7 @@ MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_secret_key
 JWT_EXPIRES_IN=7d
 CLIENT_URL=http://localhost:5173
+GEMINI_API_KEY=your_google_gemini_api_key
 ```
 
 ---
@@ -271,12 +289,13 @@ VITE_API_URL=http://localhost:5000/api
 - Environment Variables
 - Axios Interceptors
 - Cloud Deployment
+-  Google Gemini API Integration
+- Prompt Engineering
 
 ---
 
 # 🚀 Future Enhancements
 
-- AI-generated interview questions
 - Voice Interview Support
 - Timer for Interviews
 - PDF Report Generation
