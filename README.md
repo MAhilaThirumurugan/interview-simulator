@@ -169,7 +169,7 @@ interview-simulator
 
 ## Interview Session
 
-![Interview Question](screenshots/Interview-question.png)
+![Interview Question](screenshots/Ai-.png)
 
 ![Interview Answer](screenshots/Interview-answer.png)
 
