@@ -135,7 +135,7 @@ Rules:
 `;
 
     const response = await ai.models.generateContent({
-      model: "models/gemini-flash-latest",
+      model: "gemini-3.7-flash",
       contents: prompt,
     });
 
