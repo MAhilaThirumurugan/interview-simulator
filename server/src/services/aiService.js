@@ -50,7 +50,24 @@ const fallbackQuestions = {
     "Explain Binary Search.",
   ],
 };
+async function generateWithRetry(prompt, retries = 2) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      return await ai.models.generateContent({
+        model: "gemini-3.6-flash",
+        contents: prompt,
+      });
+    } catch (error) {
+      console.error(`Gemini attempt ${attempt} failed:`, error);
 
+      if (attempt === retries) {
+        throw error;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
+  }
+}
 async function generateQuestion(topic, difficulty, previousQuestions = []) {
   try {
     const prompt = `
@@ -69,10 +86,7 @@ Rules:
 - Only return the question.
 `;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.6-flash",
-      contents: prompt,
-    });
+const response = await generateWithRetry(prompt);
 
     return response.text.trim();
   } catch (error) {
@@ -132,10 +146,7 @@ Rules:
 - Give 2 to 4 concise points for each.
 `;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.6-flash",
-      contents: prompt,
-    });
+const response = await generateWithRetry(prompt);
 
     const text = response.text
       .replace(/```json/g, "")
