@@ -1,3 +1,4 @@
+````javascript
 const { GoogleGenAI } = require("@google/genai");
 require("dotenv").config();
 
@@ -15,7 +16,7 @@ const fallbackQuestions = {
     "Explain React lifecycle.",
     "What is JSX?",
     "What is useMemo?",
-    "What is useCallback?"
+    "What is useCallback?",
   ],
 
   JavaScript: [
@@ -25,35 +26,33 @@ const fallbackQuestions = {
     "Explain promises.",
     "What is async/await?",
     "What is event delegation?",
-    "Explain callback functions."
+    "Explain callback functions.",
   ],
 
   Node: [
     "What is Express.js?",
     "What is middleware?",
     "Explain JWT authentication.",
-    "Difference between synchronous and asynchronous code."
+    "Difference between synchronous and asynchronous code.",
   ],
 
   MongoDB: [
     "What is MongoDB?",
     "Difference between SQL and MongoDB.",
     "Explain indexing.",
-    "What is aggregation?"
+    "What is aggregation?",
   ],
 
   DSA: [
     "What is Big O notation?",
     "Explain HashMap.",
     "Difference between Stack and Queue.",
-    "Explain Binary Search."
-  ]
+    "Explain Binary Search.",
+  ],
 };
 
 async function generateQuestion(topic, difficulty, previousQuestions = []) {
-
   try {
-
     const prompt = `
 You are an experienced technical interviewer.
 
@@ -76,8 +75,8 @@ Rules:
     });
 
     return response.text.trim();
-
   } catch (error) {
+    console.error("Gemini question generation ERROR:", error);
 
     console.log("Gemini unavailable. Using fallback questions.");
 
@@ -86,7 +85,7 @@ Rules:
       [`Explain ${topic} with an example.`];
 
     const available = questions.filter(
-      q => !previousQuestions.includes(q)
+      (q) => !previousQuestions.includes(q)
     );
 
     return (
@@ -94,11 +93,10 @@ Rules:
       `Explain ${topic} with an example.`
     );
   }
-
 }
+
 async function evaluateAnswer(question, answer, topic) {
   try {
-
     const prompt = `
 You are an expert technical interviewer.
 
@@ -135,7 +133,7 @@ Rules:
 `;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.7-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
     });
 
@@ -145,13 +143,15 @@ Rules:
       .trim();
 
     return JSON.parse(text);
-
   } catch (error) {
-    console.error("Gemini ERROR:", error);
+    console.error("Gemini evaluation ERROR:", error);
 
     console.log("Gemini unavailable. Using fallback evaluation.");
 
-    const words = answer.trim().split(/\s+/).filter(Boolean).length;
+    const words = answer
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean).length;
 
     let score = 4;
 
@@ -163,21 +163,18 @@ Rules:
       score,
       feedback:
         "AI evaluation is temporarily unavailable. This score is based on answer length.",
-        strengths:
+      strengths:
         words > 25
           ? [
               "Attempted the question with reasonable detail",
-              "Good effort"
+              "Good effort",
             ]
-          : [
-              "Answer submitted"
-            ],
-      
+          : ["Answer submitted"],
       improvements: [
         "Explain concepts in more detail",
         "Add real-world examples",
-        "Use technical terminology where appropriate"
-      ]
+        "Use technical terminology where appropriate",
+      ],
     };
   }
 }
@@ -186,3 +183,4 @@ module.exports = {
   generateQuestion,
   evaluateAnswer,
 };
+````
