@@ -6,10 +6,16 @@ exports.start = async (req, res) => {
     const { topic, difficulty } = req.body;
 
     if (!topic || !difficulty) {
-      return res.status(400).json({ message: 'Topic and difficulty are required' });
+      return res.status(400).json({
+        message: 'Topic and difficulty are required'
+      });
     }
 
-    const question = await generateQuestion(topic, difficulty);
+    // Generate first question
+    const result = await generateQuestion(topic, difficulty);
+
+    const question = result.question;
+    const mode = result.mode;
 
     const session = await Interview.create({
       user: req.user._id,
@@ -21,12 +27,17 @@ exports.start = async (req, res) => {
     res.status(201).json({
       sessionId: session._id,
       question,
+      mode,
       turnNumber: 1,
     });
+
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 };
+
 
 // POST /api/interviews/answer
 exports.submitAnswer = async (req, res) => {
@@ -34,76 +45,102 @@ exports.submitAnswer = async (req, res) => {
     const { sessionId, answer } = req.body;
 
     if (!sessionId || !answer) {
-      return res.status(400).json({ message: 'Session ID and answer are required' });
+      return res.status(400).json({
+        message: 'Session ID and answer are required'
+      });
     }
 
     const session = await Interview.findById(sessionId);
 
     if (!session) {
-      return res.status(404).json({ message: 'Session not found' });
+      return res.status(404).json({
+        message: 'Session not found'
+      });
     }
 
     if (session.status === 'completed') {
-      return res.status(400).json({ message: 'Interview already completed' });
+      return res.status(400).json({
+        message: 'Interview already completed'
+      });
     }
 
-    // Evaluate the current answer
+    // Evaluate current answer
     const lastTurn = session.turns[session.turns.length - 1];
-    const evaluation = await evaluateAnswer(lastTurn.question, answer, session.topic);
 
-    // Save answer + feedback to the current turn
-    lastTurn.answer      = answer;
-    lastTurn.score       = evaluation.score;
-    lastTurn.feedback    = evaluation.feedback;
+    const evaluation = await evaluateAnswer(
+      lastTurn.question,
+      answer,
+      session.topic
+    );
 
-    // Generate next question (pass previous ones to avoid repeats)
-   // Check if 3 questions have been answered
-const answeredQuestions = session.turns.filter(t => t.answer).length;
+    // Save answer + feedback
+    lastTurn.answer = answer;
+    lastTurn.score = evaluation.score;
+    lastTurn.feedback = evaluation.feedback;
 
-if (answeredQuestions >= 3) {
+    // Check how many questions have been answered
+    const answeredQuestions = session.turns.filter(
+      (t) => t.answer
+    ).length;
 
-  const avgScore =
-    session.turns.reduce((sum, t) => sum + (t.score || 0), 0) /
-    answeredQuestions;
+    // Complete interview after 3 answered questions
+    if (answeredQuestions >= 3) {
 
-  session.overallScore = Number(avgScore.toFixed(1));
-  session.status = "completed";
+      const avgScore =
+        session.turns.reduce(
+          (sum, t) => sum + (t.score || 0),
+          0
+        ) / answeredQuestions;
 
-  await session.save();
+      session.overallScore = Number(avgScore.toFixed(1));
+      session.status = 'completed';
 
-  return res.json({
-    completed: true,
-    evaluation,
-    overallScore: session.overallScore,
-    totalQuestions: answeredQuestions,
-  });
-}
+      await session.save();
 
-// Generate next question
-const previousQuestions = session.turns.map(t => t.question);
+      return res.json({
+        completed: true,
+        evaluation,
+        overallScore: session.overallScore,
+        totalQuestions: answeredQuestions,
+      });
+    }
 
-const nextQuestion = await generateQuestion(
-  session.topic,
-  session.difficulty,
-  previousQuestions
-);
+    // Previous questions
+    const previousQuestions = session.turns.map(
+      (t) => t.question
+    );
 
-session.turns.push({
-  question: nextQuestion,
-});
+    // Generate next question
+    const nextResult = await generateQuestion(
+      session.topic,
+      session.difficulty,
+      previousQuestions
+    );
 
-await session.save();
+    const nextQuestion = nextResult.question;
+    const mode = nextResult.mode;
 
-res.json({
-  completed: false,
-  evaluation,
-  nextQuestion,
-  turnNumber: session.turns.length,
-});
+    session.turns.push({
+      question: nextQuestion,
+    });
+
+    await session.save();
+
+    res.json({
+      completed: false,
+      evaluation,
+      nextQuestion,
+      mode,
+      turnNumber: session.turns.length,
+    });
+
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 };
+
 
 // PATCH /api/interviews/:id/end
 exports.end = async (req, res) => {
@@ -111,17 +148,28 @@ exports.end = async (req, res) => {
     const session = await Interview.findById(req.params.id);
 
     if (!session) {
-      return res.status(404).json({ message: 'Session not found' });
+      return res.status(404).json({
+        message: 'Session not found'
+      });
     }
 
-    // Calculate overall score from all answered turns
-    const answeredTurns = session.turns.filter(t => t.answer);
+    // Calculate overall score
+    const answeredTurns = session.turns.filter(
+      (t) => t.answer
+    );
+
     const avgScore = answeredTurns.length
-      ? answeredTurns.reduce((sum, t) => sum + t.score, 0) / answeredTurns.length
+      ? answeredTurns.reduce(
+          (sum, t) => sum + t.score,
+          0
+        ) / answeredTurns.length
       : 0;
 
-    session.overallScore = Math.round(avgScore * 10) / 10;
-    session.status       = 'completed';
+    session.overallScore =
+      Math.round(avgScore * 10) / 10;
+
+    session.status = 'completed';
+
     await session.save();
 
     res.json({
@@ -130,35 +178,58 @@ exports.end = async (req, res) => {
       totalQuestions: answeredTurns.length,
       session,
     });
+
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 };
+
 
 // GET /api/interviews/history
 exports.getHistory = async (req, res) => {
   try {
-    const interviews = await Interview.find({ user: req.user._id })
+    const interviews = await Interview.find({
+      user: req.user._id
+    })
       .sort({ createdAt: -1 })
-      .select('topic difficulty overallScore status createdAt turns');
+      .select(
+        'topic difficulty overallScore status createdAt turns'
+      );
 
-    res.json({ interviews });
+    res.json({
+      interviews
+    });
+
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 };
+
 
 // GET /api/interviews/:id
 exports.getOne = async (req, res) => {
   try {
-    const interview = await Interview.findById(req.params.id);
+    const interview = await Interview.findById(
+      req.params.id
+    );
 
     if (!interview) {
-      return res.status(404).json({ message: 'Interview not found' });
+      return res.status(404).json({
+        message: 'Interview not found'
+      });
     }
 
-    res.json({ interview });
+    res.json({
+      interview
+    });
+
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      message: err.message
+    });
   }
 };

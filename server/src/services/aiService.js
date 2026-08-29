@@ -86,9 +86,13 @@ Rules:
 - Only return the question.
 `;
 
-const response = await generateWithRetry(prompt);
+    const response = await generateWithRetry(prompt);
 
-    return response.text.trim();
+    return {
+      question: response.text.trim(),
+      mode: "ai",
+    };
+
   } catch (error) {
     console.error("Gemini question generation ERROR:", error);
 
@@ -102,10 +106,12 @@ const response = await generateWithRetry(prompt);
       (q) => !previousQuestions.includes(q)
     );
 
-    return (
-      available[0] ||
-      `Explain ${topic} with an example.`
-    );
+    return {
+      question:
+        available[0] ||
+        `Explain ${topic} with an example.`,
+      mode: "fallback",
+    };
   }
 }
 
