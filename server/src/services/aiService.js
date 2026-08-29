@@ -147,6 +147,7 @@ Rules:
     return JSON.parse(text);
 
   } catch (error) {
+    console.error("Gemini ERROR:", error);
 
     console.log("Gemini unavailable. Using fallback evaluation.");
 
